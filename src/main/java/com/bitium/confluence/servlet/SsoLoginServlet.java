@@ -143,14 +143,19 @@ public class SsoLoginServlet extends HttpServlet {
 		    	authUserMethod.setAccessible(true);
 		    	Boolean result = (Boolean)authUserMethod.invoke(authenticator, new Object[]{request, response, principal});
 
-		        if (result) {
-		        	String redirectUrl = saml2Config.getRedirectUrl();
-		        	if (redirectUrl == null || redirectUrl.equals("")){
-		        		redirectUrl = "/confluence/dashboard.action";
-		        	}
-		        	response.sendRedirect(redirectUrl);
-		        	return;
-		        }
+			if(result){
+                                if(request.getSession().getAttribute("os_destination") != null) {
+                                        String os_destination = request.getSession().getAttribute("os_destination").toString();
+                                        response.sendRedirect(os_destination);
+                                }else{
+                                        String redirectUrl = saml2Config.getRedirectUrl();
+                                        if (redirectUrl == null || redirectUrl.equals("")){
+                                            redirectUrl = "/confluence/dashboard.action";
+                                        }
+                                        response.sendRedirect(redirectUrl);
+                                        return;
+                                }
+                        }
 		    }
 		}
 
